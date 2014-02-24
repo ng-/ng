@@ -6,8 +6,7 @@ different frameworks to build frontend apps and their backend apis. ng provides 
 
 Warning! ng is pre-alpha, but is being built for production with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing, email adam at adam.kircher@gmail.com
 
-### getting started
-##### Starting the server:
+### Start the server
 Enter in the url or file path of module dependencies. ng will load them first
 ```javascript
 var modules =
@@ -25,7 +24,7 @@ require('ng')(modules, function(ng)
 }
 ```
 
-##### Identical api:
+### Similar api
 ng's api mirrors angular's api as closely as possible.  In fact, the global api is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The module api is very similar as well
 ```javascript
 	ng.module('example', ['ngRoute'])
@@ -158,6 +157,10 @@ Here we leverage node's api to load our templates
 		$locationProvider.html5Mode(true);
 	})
 ```
+### New api
+There are two ng-only methods.
+- .interceptor() that adds middleware
+- .transform() pre-processes functions
 
 ##### Interceptors:
 ng - like many node frameworks - uses middleware to process and respond to incoming requests.  ng uses angular's interceptor api (http://docs.angularjs.org/api/ng/service/$http#interceptors) to build a middleware stack.  Register middleware using the module's interceptor method.  At the very least you will need to add one middleware interceptor - such as the one below - to serve your application
@@ -248,7 +251,7 @@ Transforms are incredibly powerful. This simple transform automatically makes yo
 - Make $location work on server side functions (send header redirect)
 - Testing API.  Any good ideas of how to integrate?
 - Make namespace use self-executing function rather than setting a global var
-- Rpc functions should allow http.get to be replaced with other protocols (web socket) or methods (post).
+- Rpc should allow http.get to be replaced with other protocols (web socket) or methods (post).
 
 ### related projects
 - ng.data: simple getter/setter for data persistence
