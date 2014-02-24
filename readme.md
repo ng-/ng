@@ -4,7 +4,7 @@
 With node.js came full-stack javascript, now there is full-stack angular. Developers should not have to use
 different frameworks to build frontend apps and their backend apis. ng provides a lightweight & elegant, full-stack framework with no other dependencies.
 
-Warning! ng is pre-alpha. While still in pre-alpha, ng is being built for production environments with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing to the project, email adam at adam.kircher@gmail.com
+Warning! ng is pre-alpha, but is being built for production environments with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing, email adam at adam.kircher@gmail.com
 
 ### getting started
 ##### Starting the server
@@ -32,7 +32,7 @@ ng's api mirrors angular's api as closely as possible.  In fact, the global api 
 
 	.factory('example', function()
 	{
-		return 'Hi! I am an example that is identical on both the server and the client'
+		return ng.isString('Hi! I am an example that is identical on both the server and the client')
 	})
 ```
 
@@ -93,7 +93,7 @@ Each method includes a client and server property if you wish to register the fu
 ```
 
 ##### Asymmetry
-- Using the client & server properties in tandom, one can create an injectable service that acts differently on the client and on the server, this is especially helpful for things like authentication where the server can check on what the client did.
+Using the client & server properties in tandom, one can create an injectable service that acts differently on the client and on the server, this is especially helpful for things like authentication where the server can check on what the client did.
 ```javascript
 .factory.client('login', function($http)
 {
@@ -196,7 +196,7 @@ ng - like many node frameworks - uses middleware to process and respond to incom
 ##### transforms
 In the previous os factory and routing config, we showed you a little magic.  How do we make these functions that contain node-specific code run on a browser where node is not available?
 
-**Factory** Actually the os factory - unlike the other factory examples - will run only on the server. However, ng automatically creates a factory of the same name and identical api on the client.  This "twin" client factory simply calls the server factory via an http request and the result is returned to the client. Since this all happens automatically, the client functionality for os appears identical to the server's.
+*Factories:* Actually the os factory - unlike the other factory examples - will run only on the server. However, ng automatically creates a factory of the same name and identical api on the client.  This "twin" client factory simply calls the server factory via an http request and the result is returned to the client. Since this all happens automatically, the client functionality appears identical to the server's.
 
 ```javascript
 //This is what the os factory looks like on the client
@@ -208,7 +208,7 @@ In the previous os factory and routing config, we showed you a little magic.  Ho
 })
 ```
 
-**Templates** Something similar happens in the routing config.  The routing config is executed on the server as soon as ng is started.  Once loaded on the server, the templates are written to the client module before it is served by the interceptor.  The template code will appear in the client's config as if it was written there all along.
+*Templates:* Something similar happens in the routing config.  The routing config is executed on the server as soon as ng is started.  Once loaded on the server, the templates are written to the client module before it is served by the interceptor. The template code will simply appear in the client's config.
 
 Sound complicated?  It's not!  ng uses a very elegant api exposed as the module's transform method.  ng has built in transforms for making client-side factories - like the os example - and filling in templates - like the routing config - but allows you to create your own transforms as well.
 ```javascript
@@ -222,7 +222,7 @@ Sound complicated?  It's not!  ng uses a very elegant api exposed as the module'
 })
 ```
 
-Transforms can be incredibly powerful. Look at this short transform to see how simple it is to automatically make all of your client code minification-safe by automatically surrounding every function with an angular inline injection array.
+Transforms are incredibly powerful. Look at this short transform to see how simple it is to automatically make your code minification-safe by surrounding every client function with an angular inline injection array.
 ```javascript
 .transform(function(fn, type, name)
 {
