@@ -41,11 +41,18 @@ With node's require it is easy to build a modular application using 3rd party np
 	.directive('third-party', require('ng.thirdparty').directive)
 ```
 
-Almost everything works exactly like Angular including dependency injection & decorators.  Things that don't work on the server are fairly intuitive such as $browser, $location, $document, & $window
+Almost everything works exactly like Angular including dependency injection & decorators.  Things that don't work on the server are $location, $document, & $window
 ```javascript
+	//This works
 	.factory('dependent', function($q)
 	{
 		var q = $q.defer()
+	}
+
+	//This won't work
+	.factory('dependent', function($window)
+	{
+		$window.alert("Can I alert on the server?")
 	}
 ```
 
