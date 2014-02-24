@@ -74,22 +74,6 @@ Here we leverage node's api to load our templates
 	})
 ```
 
-##### Compatibility:
-Almost everything works exactly like Angular including dependency injection & decorators.  Things that don't work on the server are - understandably - $location, $document, & $window
-```javascript
-	//This works
-	.factory('dependent', function($q)
-	{
-		var q = $q.defer()
-	}
-
-	//This won't work
-	.factory('dependent', function($window)
-	{
-		$window.alert("Can I alert on the server?")
-	}
-```
-
 ##### Default location:
 Config, run, provider, factory, & service are all put on both the client and server. Some services, however, such as controllers, directives, and animations are only available on the client.
 ```javascript
@@ -156,6 +140,22 @@ Using the client & server properties in tandom, one can create an injectable ser
 		}
 	}
 }
+```
+
+##### Compatibility:
+Almost everything works exactly like angular including dependency injection & decorators.  Things that don't work on the server are - understandably - $location, $document, & $window
+```javascript
+	//This works on both the client and server
+	.factory('dependent', function($q)
+	{
+		var q = $q.defer()
+	}
+
+	//This works on the client but not the server
+	.factory('dependent', function($window)
+	{
+		$window.alert("Can I alert on the server?")
+	}
 ```
 
 ### ... additions to angular
