@@ -23,7 +23,8 @@ require('ng')(modules, function(ng)
 	//Load your application here
 }
 ```
- 
+  
+
 ng's api mirrors angular's api as closely as possible.  In fact, the global api is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The module api is very similar as well
 ```javascript
 	ng.module('example', ['ngRoute'])
