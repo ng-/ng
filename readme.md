@@ -24,7 +24,7 @@ require('ng')(modules, function(ng)
 }
 ```
 
-### Similar api
+### It's just angular...
 ng's api mirrors angular's api as closely as possible.  In fact, the global api is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The module api is very similar as well
 ```javascript
 	ng.module('example', ['ngRoute'])
@@ -157,9 +157,9 @@ Here we leverage node's api to load our templates
 		$locationProvider.html5Mode(true);
 	})
 ```
-### New api
-There are two ng-only methods.
-- .interceptor() that adds middleware
+### ... additions to angular
+There are two non-angular (ng-only) methods:
+- .interceptor() adds middleware
 - .transform() pre-processes functions
 
 ##### Interceptors:
