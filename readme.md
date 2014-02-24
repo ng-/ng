@@ -43,6 +43,37 @@ With node's require it is easy to build a modular application using external npm
 	.directive('third-party', require('ng.thirdparty').directive)
 ```
 
+##### Node.js:
+ng enables full-stack development by allowing you to access node.js within your services.
+```javascript
+	//Look here is a nodejs specific function
+	.factory('os', function()
+	{
+		return require('os')
+	})
+```
+
+Here we leverage node's api to load our templates
+```javascript
+	.config(function($routeProvider, $locationProvider)
+	{
+		$routeProvider
+
+		.when('/', {
+			template: require('fs').readFileSync('view/splash.html'),
+			controller: 'splashCtrl'
+		})
+
+		.when('/example',
+		{
+			template:require('fs').readFileSync('view/example.html'),
+			controller: 'exampleCtrl'
+		})
+
+		$locationProvider.html5Mode(true);
+	})
+```
+
 ##### Compatibility:
 Almost everything works exactly like Angular including dependency injection & decorators.  Things that don't work on the server are - understandably - $location, $document, & $window
 ```javascript
@@ -127,36 +158,6 @@ Using the client & server properties in tandom, one can create an injectable ser
 }
 ```
 
-##### Node.js:
-ng enables full-stack development by allowing you to access node.js within your services.
-```javascript
-	//Look here is a nodejs specific function
-	.factory('os', function()
-	{
-		return require('os')
-	})
-```
-
-Here we leverage node's api to load our templates
-```javascript
-	.config(function($routeProvider, $locationProvider)
-	{
-		$routeProvider
-
-		.when('/', {
-			template: require('fs').readFileSync('view/splash.html'),
-			controller: 'splashCtrl'
-		})
-
-		.when('/example',
-		{
-			template:require('fs').readFileSync('view/example.html'),
-			controller: 'exampleCtrl'
-		})
-
-		$locationProvider.html5Mode(true);
-	})
-```
 ### ... additions to angular
 There are two non-angular (ng-only) methods:
 - .interceptor() adds middleware
