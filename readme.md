@@ -1,8 +1,7 @@
 # ng
 ### full-stack angular with no dependencies
 
-With node.js came full-stack javascript, now there is full-stack angular. Developers should not have to use
-different frameworks to build frontend apps and their backend apis. ng provides a lightweight & elegant, full-stack framework with no other dependencies.
+Developers should not have to use different frameworks to build frontend apps and their backend apis. With node.js came full-stack javascript, now there is full-stack angular. ng provides a lightweight & elegant, full-stack framework with no other dependencies.
 
 Warning! ng is pre-alpha, but is being built for production with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing, email adam at adam.kircher@gmail.com
 
@@ -164,7 +163,7 @@ There are two non-angular (ng-only) methods:
 - .transform() pre-processes functions
 
 ##### Interceptors:
-ng - like many node frameworks - uses middleware to process and respond to incoming requests.  ng uses angular's interceptor api (http://docs.angularjs.org/api/ng/service/$http#interceptors) to build a middleware stack.  Register middleware using the module's interceptor method.  At the very least you will need to add one middleware interceptor - such as the one below - to serve your application
+ng - like many node frameworks - uses middleware to process and respond to incoming requests.  ng uses [angular's interceptor api](http://docs.angularjs.org/api/ng/service/$http#interceptors) to build a middleware stack.  Register middleware using the module's interceptor method.  At the very least you will need to add one middleware interceptor - such as the one below - to serve your application
 ```javascript
 .interceptor(function()
 {
@@ -255,9 +254,9 @@ Transforms are incredibly powerful. This simple transform automatically makes yo
 - Rpc should allow http.get to be replaced with other protocols (web socket) or methods (post).
 
 ### related projects
-- ng.data: simple getter/setter for data persistence
-- ng.seed: create a modular ng application using npm packages
+- [ng.data](https://github.com/ng-/ng.data): simple getter/setter for data persistence
+- [ng.seed](https://github.com/ng-/ng.seed): create a modular ng application using npm packages
 - ng.cql: realtime cassandra database syncing
-- ng.auth: example authentication using ng interceptors
-- ng.crud: example demonstrating a simple crud application using ng.seed
-- ng.style: alert and input helpers for use with twitter bootstrap
+- [ng.auth](https://github.com/ng-/ng.auth): example authentication using ng interceptors
+- [ng.crud](https://github.com/ng-/ng.crud): example demonstrating a simple crud application using ng.seed
+- [ng.style](https://github.com/ng-/ng.style): alert and input helpers for use with twitter bootstrap
