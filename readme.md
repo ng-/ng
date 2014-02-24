@@ -4,10 +4,10 @@
 With node.js came full-stack javascript, now there is full-stack angular. Developers should not have to use
 different frameworks to build frontend apps and their backend apis. ng provides a lightweight & elegant, full-stack framework with no other dependencies.
 
-Warning! ng is pre-alpha, but is being built for production environments with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing, email adam at adam.kircher@gmail.com
+Warning! ng is pre-alpha, but is being built for production with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing, email adam at adam.kircher@gmail.com
 
 ### getting started
-##### Starting the server
+##### Starting the server:
 Enter in the url or file path of module dependencies. ng will load them first
 ```javascript
 var modules =
@@ -25,7 +25,7 @@ require('ng')(modules, function(ng)
 }
 ```
 
-##### Identical API
+##### Identical api:
 ng's api mirrors angular's api as closely as possible.  In fact, the global api is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The module api is very similar as well
 ```javascript
 	ng.module('example', ['ngRoute'])
@@ -36,7 +36,7 @@ ng's api mirrors angular's api as closely as possible.  In fact, the global api 
 	})
 ```
 
-##### External Libraries
+##### External libraries:
 With node's require it is easy to build a modular application using external npm modules
 ```javascript
 	.factory('third-party', require('ng.thirdparty').factory)
@@ -44,7 +44,7 @@ With node's require it is easy to build a modular application using external npm
 	.directive('third-party', require('ng.thirdparty').directive)
 ```
 
-##### Compatibility
+##### Compatibility:
 Almost everything works exactly like Angular including dependency injection & decorators.  Things that don't work on the server are - understandably - $location, $document, & $window
 ```javascript
 	//This works
@@ -60,7 +60,7 @@ Almost everything works exactly like Angular including dependency injection & de
 	}
 ```
 
-##### Default Location
+##### Default location:
 Config, run, provider, factory, & service are all put on both the client and server. Some services, however, such as controllers, directives, and animations are only available on the client.
 ```javascript
 	//Controller's only make sense to be on the client
@@ -70,7 +70,7 @@ Config, run, provider, factory, & service are all put on both the client and ser
 	})
 ```
 
-##### Specifying Location
+##### Specifying location:
 Each method includes a client and server property if you wish to register the function in only one place.
 ```javascript
 	//this factory is the equivalent of the two below
@@ -92,8 +92,8 @@ Each method includes a client and server property if you wish to register the fu
 	}
 ```
 
-##### Asymmetry
-Using the client & server properties in tandom, one can create an injectable service that acts differently on the client and on the server, this is especially helpful for things like authentication where the server can check on what the client did.
+##### Asymmetry:
+Using the client & server properties in tandom, one can create an injectable service that acts differently on the client and on the server, as in this authentication example below.
 ```javascript
 .factory.client('login', function($http)
 {
@@ -128,7 +128,7 @@ Using the client & server properties in tandom, one can create an injectable ser
 }
 ```
 
-##### node.js require
+##### Node.js:
 ng enables full-stack development by allowing you to access node.js within your services.
 ```javascript
 	//Look here is a nodejs specific function
@@ -138,8 +138,7 @@ ng enables full-stack development by allowing you to access node.js within your 
 	})
 ```
 
-##### node.js readFile
-Here we leverage node's api to load our templates (using a transformer which is explained later).
+Here we leverage node's api to load our templates
 ```javascript
 	.config(function($routeProvider, $locationProvider)
 	{
@@ -160,7 +159,7 @@ Here we leverage node's api to load our templates (using a transformer which is 
 	})
 ```
 
-##### interceptors
+##### Interceptors:
 ng - like many node frameworks - uses middleware to process and respond to incoming requests.  ng uses angular's interceptor api (http://docs.angularjs.org/api/ng/service/$http#interceptors) to build a middleware stack.  Register middleware using the module's interceptor method.  At the very least you will need to add one middleware interceptor - such as the one below - to serve your application
 ```javascript
 .interceptor(function()
@@ -193,7 +192,7 @@ ng - like many node frameworks - uses middleware to process and respond to incom
 		}
 	})
 ```
-##### transforms
+##### Transforms:
 In the previous os factory and routing config, we showed you a little magic.  How do we make these functions that contain node-specific code run on a browser where node is not available?
 
 *Factories:* Actually the os factory - unlike the other factory examples - will run only on the server. However, ng automatically creates a factory of the same name and identical api on the client.  This "twin" client factory simply calls the server factory via an http request and the result is returned to the client. Since this all happens automatically, the client functionality appears identical to the server's.
@@ -222,7 +221,7 @@ Sound complicated?  It's not!  ng uses a very elegant api exposed as the module'
 })
 ```
 
-Transforms are incredibly powerful. Look at this short transform to see how simple it is to automatically make your code minification-safe by surrounding every client function with an angular inline injection array.
+Transforms are incredibly powerful. This simple transform automatically makes your code minification-safe by surrounding every client function with an angular inline injection array. Now that's power!
 ```javascript
 .transform(function(fn, type, name)
 {
