@@ -1,16 +1,14 @@
-# ng (warning! pre-alpha)
+# ng
 ### full-stack angular with no dependencies
 
-With node.js came full-stack javascript. However, developers still had to use
-different frameworks to build frontend apps and their backend apis. Enter ng,
-now there is an elegant, full-stack AngularJS framework with no other dependencies
+With node.js came full-stack javascript, now there is full-stack Angular. Developers should not have to use
+different frameworks to build frontend apps and their backend apis. ng provides a lightweight & elegant, full-stack framework with no other dependencies.
 
-While still in pre-alpha, ng is being built for production environments with sponsorship
-by Pook-n-Cheek.  If you are interested in contributing to the project, email adam at adam.kircher@gmail.com
+Warning! ng is pre-alpha. While still in pre-alpha, ng is being built for production environments with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing to the project, email adam at adam.kircher@gmail.com
 
-## example
+### getting started
+Enter in the url or file path of module dependencies. ng will load them first
 ```javascript
-//Enter in the url or file path of module dependencies. ng will load them first
 var modules =
 {
 	ng:'//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.js',
@@ -22,17 +20,136 @@ require('ng')(modules, function(ng)
 	//ng is a listener that accepts a request & reponse
 	require('http').createServer(ng).listen(1337)
 
+	//Load your application here
+}
+```
+
+ng's api mirrors angular's api as closely as possible.  In fact, the global api is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The module api is very similar as well
+```javascript
 	ng.module('example', ['ngRoute'])
 
-	//Just like most node.js frameworks ng uses a stack of middleware
-	//however its middleware uses Angular's interceptor API. Valid
-	//properties include request, requestError, response, responseError
-	//The example below sends an app's base template if the response has no data
-	.interceptor(function()
+	.factory('example', function()
+	{
+		return 'Hi! I am an example that is identical on both the server and the client'
+	})
+```
+
+With node's require it is easy to build a modular application using 3rd party npm packages
+```javascript
+	.factory('third-party', require('ng.thirdparty').factory)
+
+	.directive('third-party', require('ng.thirdparty').directive)
+```
+
+Almost everything works exactly like Angular including dependency injection & decorators.  Things that don't work on the server are fairly intuitive such as $browser, $location, $document, & $window
+```javascript
+	.factory('dependent', function($q)
+	{
+		var q = $q.defer()
+	}
+```
+
+Some services such as controllers, directives, and animations are only available on the client.  Config, run, provider, factory, & service are all put on both the client and server.
+```javascript
+	.controller('example', function($scope, os)
+	{
+		//Controller's only make sense to be on the client
+		$scope.os = os
+	})
+```
+
+Each method includes a client and server property if you wish to register the function in only one place.
+```javascript
+	//this factory is the equivalent of the two below
+	.factory('dependent', function($q)
+	{
+		//I will only be available on the server
+		var q = $q.defer()
+	}
+
+	//I will only be available on the server
+	.factory.server('dependent', function($q)
+	{
+		var q = $q.defer()
+	}
+
+	//I will only be available on the client
+	.factory.client('dependent', function($q)
+	{
+		var q = $q.defer()
+	}
+```
+
+Using the client & server properties in tandom, one can create an injectable service that acts differently on the client and on the server, this is especially helpful for things like authentication where the server can check on what the client did.
+```javascript
+.factory.client('login', function($http)
+{
+	return function(id, password)
+	{
+		return $http.get('/rpc/login?verify["'+id+'","'+password+'"]').then(function(access_token)
+		{
+			//code to store the access token in a session
+
+			return access_token ? true : false
+		})
+	}
+})
+
+.factory.client('login', function(data)
+{
+	var hmac = require('crypto').createHmac
+
+	return
+	{
+		verify: function(id, password)
+		{
+			var access_token = hmac('sha256', id).update(password).digest('hex')
+
+			//Save access token to the database
+
+			return access_token
+		}
+	}
+}
+```
+
+ng enables full-stack development by allowing you to access node.js within your services.
+```javascript
+	.factory('os', function()
+	{
+		//Look here is a nodejs specific function
+		return require('os')
+	})
+```
+
+Here we leverage node's api to load our templates (using a transformer which is explained later).
+```javascript
+	.config(function($routeProvider, $locationProvider)
+	{
+		$routeProvider
+
+		.when('/', {
+			template: require('fs').readFileSync('view/splash.html'),
+			controller: 'splashCtrl'
+		})
+
+		.when('/example',
+		{
+			template:require('fs').readFileSync('view/example.html'),
+			controller: 'exampleCtrl'
+		})
+
+		$locationProvider.html5Mode(true);
+	})
+```
+
+ng - like many node frameworks - uses middleware to process and respond to incoming requests.  ng uses angular's interceptor api (http://docs.angularjs.org/api/ng/service/$http#interceptors) to build a middleware stack.  Add middleware with the module's interceptor method.  At the very least you will need to add one middleware interceptor to server your application
+```javascript
+.interceptor(function()
 	{
 		return {
 
-			response:function(data)
+			response:function(response)
 			{
 				//ng.toString() will concatenate all modules, replacing
 				//the need to specify each one manually.  To do it the
@@ -40,7 +157,7 @@ require('ng')(modules, function(ng)
 				//'<script>'+ng.module('ng')+'</script>',
 				//'<script>'+ng.module('ngRoute')+'</script>',
 				//'<script>'+ng.module('example')+'</script>',
-				return data ||
+				response.data = response.data ||
 				[
 					"<html ng-app='example'>",
 						"<head>",
@@ -52,117 +169,54 @@ require('ng')(modules, function(ng)
 					"</html>"
 				]
 				.join('\n')
+
+				return response
 			}
 		}
 	})
+```
 
-	//Now we are done with ng specifics, the rest of our app looks
-	//almost exactly like angular!!!  Look carefully to spot some
-	//nodejs specific functions like require/readFile/__dirname etc.
-	//Because it has a require, this factory will be placed the server.
-	//If you access from the client - e.g., in a controller - then ng
-	//will send an http request run the function on the server and
-	//return the result, so it will look like it was run on the client
-	.factory('$os', function($http, $cpus)
-	{
-		var os = require('os')
+In the previous os factory and routing config, we showed you a little magic.  How do we make these to functions that have node functions run on a browser where there isn't node.
 
-		return [os.cpus, os.cpus]
-	})
+Actually the os factory - unlike the previous factory examples - will run only on the server. ng automatically creates a factory of the same name and identical api on the client.  This "twin" client factory simply calls the server factory via an http request and the result is returned to the client. Since this all happens automatically, the client functionality appears identical to the server's.
 
-	//This factory will be put on server and client
-	//it will be run from whereever it is accessed
-	.factory('me', function(us) { return 'hi' })
+Something similar happens in the routing config.  The config is executed in the server and then the templates are written to the client module when ng first loads.  The template code now appears in the client's config as if it was written there all along.
 
-	//Easily import 3rd party code such as a db factory/directive
-	.factory('db', require('ng.cql').factory)
-
-	.directive('db', require('ng.cql').directive)
-
-	//Controllers are automatically put on the client
-	.controller('base', function($scope, $os, $cpus, $http, db)
-	{
-		$scope.test = db('test').select('*')
-
-		$scope.os = $os[1]()
-
-		$scope.version = ng.version
-	})
-
-	//Configs/runs are put on client and server. We make an exception
-	//for templates, where the template parser will run the template
-	//on the server (readFileSync in this case) and push that result
-	//to the client config.  All config/runs are put on client as-is
-	.config(function($routeProvider, $locationProvider)
-	{
-		$routeProvider
-
-		.when('/george', {
-			template: require('fs').readFileSync('view/george.html'),
-			controller: 'base'
-		})
-
-		.when('/adam',
-		{
-			template:require('fs').readFileSync('view/adam.html'),
-			controller: 'base'
-		})
-
-		$locationProvider.html5Mode(true);
-	})
-
-	//OPTIONAL ADVANCED USAGE
-
-	//Internally ng pre-processes your module code, this functionality
-	//is added to the public api as ng.parse(), allowing cool things like
-	//automatically creating angularjs's inline injection array,
-	//or making your code pretty with automatic indentation.
-	//Include these stock parsers by require('./transform')(annotate).inline
-	//and/or require('./transform')(annotate).whitespace.
-
-	//Make your own custom parsers using the function signature below
-	//For more example's look at the stock parsers in parser.js
-	//.transform.client() and .transform.server() provide more granularity
-	.transform(function(fn, type, name)
-	{
-		//Uncomment lines below to see how a custom parser works
-		//console.log('I am parsing', type, name)
-		//console.log('Function to parse & return', fn.toString())
-		//console.log('Module API available as this', this)
-		return fn  //I didn't do anything, kept function as-is
-	})
+Sound complicated?  It's not!  ng uses a very elegant api exposed as the module's transform method.  ng has built in transforms for making client-side factories and filling in templates, but allows you to create your own as well.
+```javascript
+.transform(function(fn, type, name)
+{
+	//Uncomment lines below to see how a custom transform works
+	//console.log('I am transforming', type, name)
+	//console.log('Function to transform & return', fn.toString())
+	//console.log('Module API available as this', this)
+	return fn  //I didn't do anything: kept function as-is
 })
 ```
-## api
-the api is currently not stable, but it is meant to mirror angular's as closely as possible. for the most part ng module api is the same
-as angular's http://docs.angularjs.org/api/ng/function/angular.module, with only two new methods:
 
-- .interceptor() for setting interceptor style middleware http://docs.angularjs.org/api/ng/service/$http#interceptors
-- .transform() for pre-processing a function before it is put on the server or client, for example, adding inline injection arrays
+Don't believe me? Look at this one line transform to see how simple it is to automatically make all of your client code minification-safe by automatically surrounding it with an Angular inline injection array.
+```javascript
+.transform(function(fn, type, name)
+{
+	return fn.length ? JSON.stringify(ng.injector().annotate(fn)).replace(']', ','+fn+']') : fn
+})
+```
 
-By default each method registers the exact same function on server or client. To have control over this you can use the client and server
-properties available on every method to register the service in only one place.  For example module.factory.server(function() {]}) will only
-register that factory on the server. module.factory.client(function() {]}) will only put the code on the client.  Using both client and server
-properties in tandom one can create an injectable service that acts differently on the client than on the server.
+### changes
+- renamed parse -> transform
+- renamed stack -> interceptor
+- moved transform & interceptor from the global api to module api
+- simplified the api for the logger
 
-This is what is done by default for factories that use node.js api like require() since node api is not available on the client. For these factories,
-ng - using transforms - will automatically convert the factory's client-side equivalents into remote procedure calls (rpc) to the server.  The result is
-their api looking identical on server and client but the internal mechanic of them are quite different. And of course if they were syncronous they will
-become async on the client because of the http call to the server
-
-## changes
-- renamed parse -> transform & stack -> interceptor and moved them from the global api to module api
-- simplified the api for the log function
-
-## todos
+### todos
 - Many, many ideas. Feel free to email me suggestions!
-- More stock middleware, gzip etc, and more stock parsers
+- More stock middleware, gzip etc, and more stock transforms
 - Make $location work on server side functions (send header redirect)
-- Testing API
+- Testing API.  Any good ideas of how to integrate?
 - Make namespace use self-executing function rather than setting a global var
-- Server/Client Rpc functions should be configurable to replace default http.get to other protocols (web socket) or methods (post).
+- Rpc functions should allow http.get to be replaced with other protocols (web socket) or methods (post).
 
-## related projects
+### related projects
 - ng.data: simple getter/setter for data persistence
 - ng.seed: create a modular ng application using npm packages
 - ng.cql: realtime cassandra database syncing
