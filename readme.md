@@ -5,6 +5,7 @@ Developers should not have to use different frameworks to build frontend apps an
 
 Warning! ng is pre-alpha, but is being built for production with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing, email adam at adam.kircher@gmail.com
 
+Browse on [github](https://github.com/ng-/ng) or Download from [npm](https://www.npmjs.org/package/ng)
 ### Start the server
 Enter in the url or file path of module dependencies. ng will load them first
 ```javascript
