@@ -26,82 +26,82 @@ require('ng')(modules, function(ng)
 ### It's just angular...
 ng's api mirrors angular's api as closely as possible.  In fact, the [global api](http://docs.angularjs.org/api/ng/function) is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The [module api](http://docs.angularjs.org/api/ng/type/angular.Module) is very similar as well
 ```javascript
-	ng.module('example', ['ngRoute'])
+ng.module('example', ['ngRoute'])
 
-	.factory('example', function()
-	{
-		return ng.isString('Hi! I am identical on both the server and the client')
-	})
+.factory('example', function()
+{
+	return ng.isString('Hi! I am identical on both the server and the client')
+})
 ```
 
 ##### Node.js:
 ng enables full-stack development by allowing you to access node.js within your services.
 ```javascript
-	//Require is a node specific function
-	.factory('os', function()
-	{
-		return require('os')
-	})
+//Require is a node specific function
+.factory('os', function()
+{
+	return require('os')
+})
 ```
 
 utilizing node's require, it is easy to build a modular application using external npm modules
 ```javascript
-	.factory('third-party', require('ng.thirdparty').factory)
+.factory('third-party', require('ng.thirdparty').factory)
 
-	.directive('third-party', require('ng.thirdparty').directive)
+.directive('third-party', require('ng.thirdparty').directive)
 ```
 
 here we leverage node's readFileSync to load our templates
 ```javascript
-	.config(function($routeProvider, $locationProvider)
-	{
-		$routeProvider
+.config(function($routeProvider, $locationProvider)
+{
+	$routeProvider
 
-		.when('/', {
-			template: require('fs').readFileSync('view/splash.html'),
-			controller: 'splashCtrl'
-		})
-
-		.when('/example',
-		{
-			template:require('fs').readFileSync('view/example.html'),
-			controller: 'exampleCtrl'
-		})
-
-		$locationProvider.html5Mode(true);
+	.when('/', {
+		template: require('fs').readFileSync('view/splash.html'),
+		controller: 'splashCtrl'
 	})
+
+	.when('/example',
+	{
+		template:require('fs').readFileSync('view/example.html'),
+		controller: 'exampleCtrl'
+	})
+
+	$locationProvider.html5Mode(true);
+})
 ```
 
 ##### Default location:
 Config, run, provider, factory, & service are all put on both the client and server. Some services, however, such as controllers, directives, and animations are only available on the client.
 ```javascript
-	//Controller's only make sense to be on the client
-	.controller('example', function($scope, os)
-	{
-		$scope.os = os
-	})
+//Controller's only make sense to be on the client
+.controller('example', function($scope, os)
+{
+	$scope.os = os
+})
 ```
 
 ##### Specifying location:
 Each method includes a client and server property if you wish to register the function in only one place.
 ```javascript
-	//I will only be available on the server
-	.factory.server('dependent', function($q)
-	{
-		var q = $q.defer()
-	}
+//I will only be available on the server
+.factory.server('dependent', function($q)
+{
+	var q = $q.defer()
+}
 
-	//I will only be available on the client
-	.factory.client('dependent', function($q)
-	{
-		var q = $q.defer()
-	}
+//I will only be available on the client
+.factory.client('dependent', function($q)
+{
+	var q = $q.defer()
+}
 
-	//I am equivalent to the two factories above
-	.factory('dependent', function($q)
-	{
-		var q = $q.defer()
-	}
+//I am equivalent to the two factories above
+.factory('dependent', function($q)
+{
+	var q = $q.defer()
+}
 ```
 
 ##### Asymmetry:
@@ -143,17 +143,17 @@ Using the client & server properties in tandom, one can create an injectable ser
 ##### Compatibility:
 Almost everything works exactly like angular including dependency injection & decorators.  Things that don't work on the server are - understandably - $location, $document, & $window
 ```javascript
-	//This works on both the client and server
-	.factory('dependent', function($q)
-	{
-		var q = $q.defer()
-	}
+//This works on both the client and server
+.factory('dependent', function($q)
+{
+	var q = $q.defer()
+}
 
-	//This works on the client but not the server
-	.factory('dependent', function($window)
-	{
-		$window.alert("Can I alert on the server?")
-	}
+//This works on the client but not the server
+.factory('dependent', function($window)
+{
+	$window.alert("Can I alert on the server?")
+}
 ```
 
 ### ... additions to angular
