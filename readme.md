@@ -34,25 +34,24 @@ ng's api mirrors angular's api as closely as possible.  In fact, the [global api
 	})
 ```
 
-##### External libraries:
-With node's require it is easy to build a modular application using external npm modules
-```javascript
-	.factory('third-party', require('ng.thirdparty').factory)
-
-	.directive('third-party', require('ng.thirdparty').directive)
-```
-
 ##### Node.js:
 ng enables full-stack development by allowing you to access node.js within your services.
 ```javascript
-	//Look here is a nodejs specific function
+	//Require is a node specific function
 	.factory('os', function()
 	{
 		return require('os')
 	})
 ```
 
-Here we leverage node's api to load our templates
+utilizing node's require, it is easy to build a modular application using external npm modules
+```javascript
+	.factory('third-party', require('ng.thirdparty').factory)
+
+	.directive('third-party', require('ng.thirdparty').directive)
+```
+
+here we leverage node's readFileSync to load our templates
 ```javascript
 	.config(function($routeProvider, $locationProvider)
 	{
@@ -86,12 +85,6 @@ Config, run, provider, factory, & service are all put on both the client and ser
 ##### Specifying location:
 Each method includes a client and server property if you wish to register the function in only one place.
 ```javascript
-	//this factory is the equivalent of the two below
-	.factory('dependent', function($q)
-	{
-		var q = $q.defer()
-	}
-
 	//I will only be available on the server
 	.factory.server('dependent', function($q)
 	{
@@ -100,6 +93,12 @@ Each method includes a client and server property if you wish to register the fu
 
 	//I will only be available on the client
 	.factory.client('dependent', function($q)
+	{
+		var q = $q.defer()
+	}
+
+	//I am equivalent to the two factories above
+	.factory('dependent', function($q)
 	{
 		var q = $q.defer()
 	}
