@@ -1,7 +1,7 @@
 # ng
 ### full-stack angular with no dependencies
 
-With node.js came full-stack javascript, now there is full-stack Angular. Developers should not have to use
+With node.js came full-stack javascript, now there is full-stack angular. Developers should not have to use
 different frameworks to build frontend apps and their backend apis. ng provides a lightweight & elegant, full-stack framework with no other dependencies.
 
 Warning! ng is pre-alpha. While still in pre-alpha, ng is being built for production environments with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing to the project, email adam at adam.kircher@gmail.com
@@ -23,7 +23,7 @@ require('ng')(modules, function(ng)
 	//Load your application here
 }
 ```
-
+ 
 ng's api mirrors angular's api as closely as possible.  In fact, the global api is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The module api is very similar as well
 ```javascript
 	ng.module('example', ['ngRoute'])
