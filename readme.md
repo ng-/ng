@@ -24,7 +24,7 @@ require('ng')(modules, function(ng)
 ```
 
 ### It's just angular...
-ng's api mirrors angular's api as closely as possible.  In fact, the global api is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The module api is very similar as well
+ng's api mirrors angular's api as closely as possible.  In fact, the [global api](http://docs.angularjs.org/api/ng/function) is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The [module api](http://docs.angularjs.org/api/ng/type/angular.Module) is very similar as well
 ```javascript
 	ng.module('example', ['ngRoute'])
 
