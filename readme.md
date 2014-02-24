@@ -32,7 +32,7 @@ ng's api mirrors angular's api as closely as possible.  In fact, the global api 
 
 	.factory('example', function()
 	{
-		return ng.isString('Hi! I am an example that is identical on both the server and the client')
+		return ng.isString('Hi! I am identical on both the server and the client')
 	})
 ```
 
@@ -207,7 +207,7 @@ In the previous os factory and routing config, we showed you a little magic.  Ho
 })
 ```
 
-*Templates:* Something similar happens in the routing config.  The routing config is executed on the server as soon as ng is started.  Once loaded on the server, the templates are written to the client module before it is served by the interceptor. The template code will simply appear in the client's config.
+*Templates:* Something similar happens in the routing config.  The routing config is executed on the server as soon as ng is started.  Once loaded on the server, the templates are written to the client module before it is served by the interceptor. The template will simply appear in the client's config.
 
 Sound complicated?  It's not!  ng uses a very elegant api exposed as the module's transform method.  ng has built in transforms for making client-side factories - like the os example - and filling in templates - like the routing config - but allows you to create your own transforms as well.
 ```javascript
@@ -223,7 +223,7 @@ Sound complicated?  It's not!  ng uses a very elegant api exposed as the module'
 
 Transforms are incredibly powerful. This simple transform automatically makes your code minification-safe by surrounding every client function with an angular inline injection array. Now that's power!
 ```javascript
-.transform(function(fn, type, name)
+.transform.client(function(fn, type, name)
 {
 	//No injection array needed if nothing to inject
 	if ( ! fn.length)
