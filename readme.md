@@ -163,7 +163,7 @@ There are two non-angular (ng-only) methods:
 - .transform() pre-processes functions
 
 ##### Interceptors:
-ng - like many node frameworks - uses middleware to process and respond to incoming requests.  ng uses [angular's interceptor api](http://docs.angularjs.org/api/ng/service/$http#interceptors) to build a middleware stack.  Register middleware using the module's interceptor method.  At the very least you will need to add one middleware interceptor - such as the one below - to serve your application
+ng - like many node frameworks - uses middleware to process and respond to incoming requests.  ng uses [angular's interceptor api](http://docs.angularjs.org/api/ng/service/$http#interceptors) to build a middleware stack.  Register middleware using the module's interceptor method. You will need at least one interceptor to serve your application
 ```javascript
 .interceptor(function()
 {
