@@ -7,6 +7,7 @@ different frameworks to build frontend apps and their backend apis. ng provides 
 Warning! ng is pre-alpha. While still in pre-alpha, ng is being built for production environments with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing to the project, email adam at adam.kircher@gmail.com
 
 ### getting started
+- Starting the server
 Enter in the url or file path of module dependencies. ng will load them first
 ```javascript
 var modules =
@@ -23,8 +24,8 @@ require('ng')(modules, function(ng)
 	//Load your application here
 }
 ```
-
-- ng's api mirrors angular's api as closely as possible.  In fact, the global api is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The module api is very similar as well
+*Identical API*
+ng's api mirrors angular's api as closely as possible.  In fact, the global api is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The module api is very similar as well
 ```javascript
 	ng.module('example', ['ngRoute'])
 
@@ -33,15 +34,15 @@ require('ng')(modules, function(ng)
 		return 'Hi! I am an example that is identical on both the server and the client'
 	})
 ```
-
-- With node's require it is easy to build a modular application using 3rd party npm packages
+**External Libraries**
+With node's require it is easy to build a modular application using 3rd party npm packages
 ```javascript
 	.factory('third-party', require('ng.thirdparty').factory)
 
 	.directive('third-party', require('ng.thirdparty').directive)
 ```
-
-- Almost everything works exactly like Angular including dependency injection & decorators.  Things that don't work on the server are $location, $document, & $window
+#### Compatibility
+Almost everything works exactly like Angular including dependency injection & decorators.  Things that don't work on the server are $location, $document, & $window
 ```javascript
 	//This works
 	.factory('dependent', function($q)
@@ -55,8 +56,8 @@ require('ng')(modules, function(ng)
 		$window.alert("Can I alert on the server?")
 	}
 ```
-
-- Some services such as controllers, directives, and animations are only available on the client.  Config, run, provider, factory, & service are all put on both the client and server.
+##### Client vs Server
+Config, run, provider, factory, & service are all put on both the client and server. Some services, however, such as controllers, directives, and animations are only available on the client.
 ```javascript
 	.controller('example', function($scope, os)
 	{
