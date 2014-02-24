@@ -167,34 +167,34 @@ There are two non-angular (ng-only) methods:
 ng - like many node frameworks - uses middleware to process and respond to incoming requests.  ng uses angular's interceptor api (http://docs.angularjs.org/api/ng/service/$http#interceptors) to build a middleware stack.  Register middleware using the module's interceptor method.  At the very least you will need to add one middleware interceptor - such as the one below - to serve your application
 ```javascript
 .interceptor(function()
-	{
-		return {
+{
+	return {
 
-			response:function(response)
-			{
-				//ng.toString() will concatenate all modules, replacing
-				//the need to specify each one manually.  To do it the
-				//manual way replace ng with the three lines below:
-				//'<script>'+ng.module('ng')+'</script>',
-				//'<script>'+ng.module('ngRoute')+'</script>',
-				//'<script>'+ng.module('example')+'</script>',
-				response.data = response.data ||
-				[
-					"<html ng-app='example'>",
-						"<head>",
-							ng,
-						"</head>",
-						"<body>",
-							"<div class='ng-view'></div>",
-						"</body>",
-					"</html>"
-				]
-				.join('\n')
+		response:function(response)
+		{
+			//ng.toString() will concatenate all modules, replacing
+			//the need to specify each one manually.  To do it the
+			//manual way replace ng with the three lines below:
+			//'<script>'+ng.module('ng')+'</script>',
+			//'<script>'+ng.module('ngRoute')+'</script>',
+			//'<script>'+ng.module('example')+'</script>',
+			response.data = response.data ||
+			[
+				"<html ng-app='example'>",
+					"<head>",
+						ng,
+					"</head>",
+					"<body>",
+						"<div class='ng-view'></div>",
+					"</body>",
+				"</html>"
+			]
+			.join('\n')
 
-				return response
-			}
+			return response
 		}
-	})
+	}
+})
 ```
 ##### Transforms:
 In the previous os factory and routing config, we showed you a little magic.  How do we make these functions that contain node-specific code run on a browser where node is not available?
@@ -203,10 +203,10 @@ In the previous os factory and routing config, we showed you a little magic.  Ho
 
 ```javascript
 //This is what the os factory looks like on the client
-.factory('db', function($rpc)
+.factory('os', function($rpc)
 {
 	//ng's $rpc sends an $http request to the server
-	//and will get node's require('os') asyncronously
+	//and will return require('os') asyncronously
 	return $rpc('os', '0', 'trigger')
 })
 ```
