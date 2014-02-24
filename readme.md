@@ -5,7 +5,7 @@ Developers should not have to use different frameworks to build frontend apps an
 
 Warning! ng is pre-alpha, but is being built for production with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing, email adam at adam.kircher@gmail.com
 
-Browse ng on [github](https://github.com/ng-/ng) or download on [npm](https://www.npmjs.org/package/ng)
+Browse ng on [github](https://github.com/ng-/ng) or install on [npm](https://www.npmjs.org/package/ng)
 ### Start the server
 Enter in the url or file path of module dependencies. ng will load them first
 ```javascript
@@ -106,7 +106,7 @@ Each method includes a client and server property if you wish to register the fu
 ```
 
 ##### Asymmetry:
-Using the client & server properties in tandom, one can create an injectable service that acts differently on the client and on the server, as in this authentication example below.
+Using the client & server properties in tandem, one can create an injectable service that acts differently on the client and on the server, as in this authentication example below.
 ```javascript
 .factory.client('login', function($http)
 {
