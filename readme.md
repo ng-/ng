@@ -7,7 +7,7 @@ different frameworks to build frontend apps and their backend apis. ng provides 
 Warning! ng is pre-alpha. While still in pre-alpha, ng is being built for production environments with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing to the project, email adam at adam.kircher@gmail.com
 
 ### getting started
-- Starting the server
+##### Starting the server
 Enter in the url or file path of module dependencies. ng will load them first
 ```javascript
 var modules =
@@ -24,7 +24,8 @@ require('ng')(modules, function(ng)
 	//Load your application here
 }
 ```
-*Identical API*
+
+##### Identical API
 ng's api mirrors angular's api as closely as possible.  In fact, the global api is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The module api is very similar as well
 ```javascript
 	ng.module('example', ['ngRoute'])
@@ -34,14 +35,16 @@ ng's api mirrors angular's api as closely as possible.  In fact, the global api 
 		return 'Hi! I am an example that is identical on both the server and the client'
 	})
 ```
-**External Libraries**
+
+##### External Libraries
 With node's require it is easy to build a modular application using 3rd party npm packages
 ```javascript
 	.factory('third-party', require('ng.thirdparty').factory)
 
 	.directive('third-party', require('ng.thirdparty').directive)
 ```
-#### Compatibility
+
+##### Compatibility
 Almost everything works exactly like Angular including dependency injection & decorators.  Things that don't work on the server are $location, $document, & $window
 ```javascript
 	//This works
@@ -56,7 +59,8 @@ Almost everything works exactly like Angular including dependency injection & de
 		$window.alert("Can I alert on the server?")
 	}
 ```
-##### Client vs Server
+
+##### Default Location
 Config, run, provider, factory, & service are all put on both the client and server. Some services, however, such as controllers, directives, and animations are only available on the client.
 ```javascript
 	.controller('example', function($scope, os)
@@ -66,7 +70,8 @@ Config, run, provider, factory, & service are all put on both the client and ser
 	})
 ```
 
-- Each method includes a client and server property if you wish to register the function in only one place.
+##### Specifying Location
+Each method includes a client and server property if you wish to register the function in only one place.
 ```javascript
 	//this factory is the equivalent of the two below
 	.factory('dependent', function($q)
@@ -88,6 +93,7 @@ Config, run, provider, factory, & service are all put on both the client and ser
 	}
 ```
 
+##### Asymmetry
 - Using the client & server properties in tandom, one can create an injectable service that acts differently on the client and on the server, this is especially helpful for things like authentication where the server can check on what the client did.
 ```javascript
 .factory.client('login', function($http)
@@ -121,7 +127,8 @@ Config, run, provider, factory, & service are all put on both the client and ser
 }
 ```
 
-- ng enables full-stack development by allowing you to access node.js within your services.
+##### node.js require
+ng enables full-stack development by allowing you to access node.js within your services.
 ```javascript
 	.factory('os', function()
 	{
@@ -130,7 +137,8 @@ Config, run, provider, factory, & service are all put on both the client and ser
 	})
 ```
 
-- Here we leverage node's api to load our templates (using a transformer which is explained later).
+##### node.js readFile
+Here we leverage node's api to load our templates (using a transformer which is explained later).
 ```javascript
 	.config(function($routeProvider, $locationProvider)
 	{
@@ -151,7 +159,8 @@ Config, run, provider, factory, & service are all put on both the client and ser
 	})
 ```
 
-- ng - like many node frameworks - uses middleware to process and respond to incoming requests.  ng uses angular's interceptor api (http://docs.angularjs.org/api/ng/service/$http#interceptors) to build a middleware stack.  Add middleware with the module's interceptor method.  At the very least you will need to add one middleware interceptor to server your application
+##### interceptors
+ng - like many node frameworks - uses middleware to process and respond to incoming requests.  ng uses angular's interceptor api (http://docs.angularjs.org/api/ng/service/$http#interceptors) to build a middleware stack.  Add middleware with the module's interceptor method.  At the very least you will need to add one middleware interceptor to server your application
 ```javascript
 .interceptor(function()
 	{
@@ -183,8 +192,8 @@ Config, run, provider, factory, & service are all put on both the client and ser
 		}
 	})
 ```
-
-- In the previous os factory and routing config, we showed you a little magic.  How do we make these to functions that have node functions run on a browser where there isn't node.
+##### transforms
+In the previous os factory and routing config, we showed you a little magic.  How do we make these to functions that have node functions run on a browser where there isn't node.
 
 Actually the os factory - unlike the previous factory examples - will run only on the server. ng automatically creates a factory of the same name and identical api on the client.  This "twin" client factory simply calls the server factory via an http request and the result is returned to the client. Since this all happens automatically, the client functionality appears identical to the server's.
 
