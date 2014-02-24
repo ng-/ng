@@ -1,7 +1,7 @@
 # ng
 ### full-stack angular with no dependencies
 
-Developers should not have to use different frameworks to build frontend apps and their backend apis. With node.js came full-stack javascript, now there is full-stack angular. ng provides a lightweight & elegant, full-stack framework with no other dependencies.
+Developers should not have to use different frameworks to build frontend apps and their backend apis. With node.js came full-stack javascript, now there is a lightweight & elegant, full-stack angular framework.
 
 Warning! ng is pre-alpha, but is being built for production with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing, email adam at adam.kircher@gmail.com
 
