@@ -196,7 +196,7 @@ ng - like many node frameworks - uses middleware to process and respond to incom
 ##### transforms
 In the previous os factory and routing config, we showed you a little magic.  How do we make these functions that contain node-specific code run on a browser where node is not available?
 
-Actually the os factory - unlike the other factory examples - will run only on the server. However, ng automatically creates a factory of the same name and identical api on the client.  This "twin" client factory simply calls the server factory via an http request and the result is returned to the client. Since this all happens automatically, the client functionality for os appears identical to the server's.
+**Factory** Actually the os factory - unlike the other factory examples - will run only on the server. However, ng automatically creates a factory of the same name and identical api on the client.  This "twin" client factory simply calls the server factory via an http request and the result is returned to the client. Since this all happens automatically, the client functionality for os appears identical to the server's.
 
 ```javascript
 //This is what the os factory looks like on the client
@@ -206,8 +206,9 @@ Actually the os factory - unlike the other factory examples - will run only on t
 	//and will get node's require('os') asyncronously
 	return $rpc('os', '0', 'trigger')
 })
+```
 
-Something similar happens in the routing config.  The routing config is executed on the server as soon as ng is started.  Once loaded on the server, the templates are written to the client module before it is served by the interceptor.  The template code will appear in the client's config as if it was written there all along.
+**Templates** Something similar happens in the routing config.  The routing config is executed on the server as soon as ng is started.  Once loaded on the server, the templates are written to the client module before it is served by the interceptor.  The template code will appear in the client's config as if it was written there all along.
 
 Sound complicated?  It's not!  ng uses a very elegant api exposed as the module's transform method.  ng has built in transforms for making client-side factories - like the os example - and filling in templates - like the routing config - but allows you to create your own transforms as well.
 ```javascript
