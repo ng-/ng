@@ -2,29 +2,65 @@
 
 module.exports = function(ngModule)											//Make server & client almost indistinguishable
 {
-	var logger    = require('./logger')
-	  , transform = require('./transform')
+	var transform = require('./transform')
 	  , intercept = require('./intercept')
-     , cache     = ngModule._cache
-
+	  , cache     = ngModule._cache
+	  , excludeRpc
+	  
 	return function(name, requires, configFn)								//Replace with same params as angular.module
 	{
-		if (requires)																//We are making a new module which needs $rpc
+		if (cache[name] && cache[name].src)									//Return cached module object if available
 		{
-			requires.push('$rpc')
+			if (requires)
+			{
+				return console.warn('Cannot create module', name, 'it already exists')
+			}
+
+			return cache[name].src
 		}
-		else if ('object' == typeof cache[name])			  				//Return cached module object if available
+
+		function toString()
 		{
-			return cache[name]
+			//Each new stringified application needs a new $rpc
+			if ('ng' == name)
+			{
+				excludeRpc = 0
+			}
+
+			//Preload prop was set in angular.js
+			if (cache[name].preload)
+			{
+				//Regular pre-loaded modules ensuring scripts don't contain non-escaped closing tags
+				if (true === cache[name].preload)
+				{
+					return '<script>'+
+								 cache[name].str.replace(/<\/script>/g, '<\\/script>')+
+							 '</script>'
+				}
+				//If this was loaded from a cdn then serve it from the cdn
+				return "<script src='"+cache[name].preload+"'></script>"
+			}
+
+			//ng modules: use closure to replace global angular w/ user callback's fn name
+			return [
+				excludeRpc++ ? '' : cache.$rpc.src,
+				'<script>',
+					'(function(ng, angular, undefined)',
+					'{',
+						"   ng.module('"+name+"', "+JSON.stringify(requires)+")",
+						cache[name].str.replace(/\n/g, '\n   '),
+					'})(angular)',
+				'</script>'
+			].join('\n')
 		}
+
+		cache[name] = cache[name] || {str:''}
+
+		requires && requires.push('$rpc')
 
 		var module = ngModule(name, requires)								//Create a new module object and module string
-		  , string = cache[name] || "\n\nangular.module('"+name+"', "+JSON.stringify(requires)+")"
 
-		module.toString = function()
-		{
-			return string.replace(/<\/script>/g, '<\\/script>')	  //Scripts cannot contain non-escaped closing tags
-		}
+		module.toString = toString
 
 		function clientDefault(type)
 		{
@@ -32,11 +68,11 @@ module.exports = function(ngModule)											//Make server & client almost indi
 			{
 				if (two)
 				{
-					string += "\n\n."+type+"('"+one+"', "+two+")"
+					cache[name].str += "\n."+type+"('"+one+"', "+two+")\n"
 				}
 				else
 				{
-					string += "\n\n."+type+"("+one+")"
+					cache[name].str += "\n."+type+"("+one+")\n"
 				}
 			}
 		}
@@ -135,11 +171,11 @@ module.exports = function(ngModule)											//Make server & client almost indi
 
 		extend('transform', transform.server, transform.client)    //Enable powerful client & server transforms
 
-		if (configFn)										//configFn is just a shortcut to .config
+		if (configFn)										   //configFn is just a shortcut to .config
 		{
 			module.config(configFn)
 		}
 
-		return cache[name] = module					//Return and cache the module
+		return cache[name].src = module							//Return and cache the module
 	}
 }

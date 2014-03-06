@@ -1,7 +1,7 @@
-# ng
+# ng: angular reimagined
 ### full-stack angular with no dependencies
 
-Developers should not have to use different frameworks to build frontend apps and their backend apis. With node.js came full-stack javascript, now comes a lightweight, elegant, full-stack framework.
+Developers should not have to use different frameworks to build frontend apps and their backend apis. With node.js came full-stack javascript, now comes ng - a lightweight, elegant, full-stack framework.
 
 Warning! ng is pre-alpha, but is being built for production with sponsorship by Pook-n-Cheek. If you have suggestions or are interested in contributing, email adam at adam.kircher@gmail.com
 
@@ -173,10 +173,11 @@ ng - like many node frameworks - uses middleware to process and respond to incom
 		{
 			//ng.toString() will concatenate all modules, replacing
 			//the need to specify each one manually.  To do it the
-			//manual way replace ng with the three lines below:
-			//'<script>'+ng.module('ng')+'</script>',
-			//'<script>'+ng.module('ngRoute')+'</script>',
-			//'<script>'+ng.module('example')+'</script>',
+			//manual way replace ng with the three lines below. Note
+			//that modules are automatically enclosed in script tags
+			//ng.module('ng'),
+			//ng.module('ngRoute'),
+			//ng.module('example'),
 			response.data = response.data ||
 			[
 				"<html ng-app='example'>",
@@ -239,7 +240,16 @@ Transforms are incredibly powerful. This simple transform automatically makes yo
 })
 ```
 
-### changes
+### changelog
+
+##### experimental9
+- Fixed encoding issue when rpc argument was base64
+- Force callback arg to be named 'ng' to ensure interoperability
+- Wrapped each module in a closure that renames angular to ng
+- Now ng.module(name).toString is enclosed in <script></script>
+- Combined $xhr and request into $httpBackend
+
+##### experimental8
 - renamed parse -> transform
 - renamed stack -> interceptor
 - moved transform & interceptor from the global api to module api
@@ -247,8 +257,11 @@ Transforms are incredibly powerful. This simple transform automatically makes yo
 
 ### todos
 - Many, many ideas. Feel free to email me suggestions!
+- Transforms currently affect all modules, but they should only affect the current module and ones that require it
+- Better Error Stacks and with 3 display options server console, client console, browser
 - More stock middleware, gzip etc, and more stock transforms
 - Make $location work on server side functions (send header redirect)
+- In ng.style's type, 'ng' is not interpolated in view; needs 'angular'
 - Testing API.  Any good ideas of how to integrate?
 - Make namespace use self-executing function rather than setting a global var
 - Rpc should allow http.get to be replaced with other protocols (web socket) or methods (post).

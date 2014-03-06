@@ -14,23 +14,26 @@ module.exports = function(modules, user)
 		  , module    = require('./package')
 		  , extend    = require('./extend')
 		  , remote    = require('./remote')
+		  , http      = require('./http')
 		  , intercept = require('./intercept')
 		  , transform = require('./transform')(annotate)
+
+		//Made-up constaint that will help ensure interopability between ng.seed packages
+		if ('ng' != annotate(user)[0])
+		{
+			return log.red(Error("Callback's argument must be named 'ng'"))
+		}
 
 		// Extend Angular's global api with helper methods
 		// --------------------------------------------------
 		function ng(req, res)
 		{
-			return injector.get('$run')(req, res)		    		//Base object is a listener for nice api
+			return intercept(req, res)		    		             //Base object is a listener for nice api
 		}
 
 		angular.copy(angular, ng) 									    //Copy all of angular to the new base object
 
-		ng.version.name = annotate(user)[0]			    			//Save user's namespace as it might not be angular
-
-		ng.version.ng   = module.version			   			    //Include our version
-
-		ng.module       = extend(ng.module)                    //Creates client & server apps simultaneously
+		ng.module = extend(ng.module)		 							//Creates client & server apps simultaneously
 
 		ng.toString = function()									    //Concat all scripts into one automatically
 		{
@@ -38,13 +41,9 @@ module.exports = function(modules, user)
 
 			for (var i in angular.module._cache)
 			{
-				if (modules[i] && ~ modules[i].indexOf('//'))
+				if ( i != '$rpc')
 				{
-					result.push("<script src='"+modules[i]+"'></script>")
-				}
-				else if ('$rpc' != i)
-				{
-					result.push('<script>'+ng.module(i)+'</script>')
+					result.push(ng.module(i))
 				}
 			}
 
@@ -68,11 +67,11 @@ module.exports = function(modules, user)
 
 		.config.client(remote.$sce)                          //Get rid of unnecessary quotes
 
+		.config.server(http.config)                          //Get rid of unnecessary quotes
+
+		.factory.server('$httpBackend', http.backend)		  //Replaces XHR with node's http.request
+
 		.factory.server('$exceptionHandler', log.handler)    //Log entire error.stack to server
-
-		.factory.server('$run', intercept.$run)   	  	     //Called on incoming connection
-
-		.factory.server('$httpBackend', intercept.$xhr)		  //Replaces XHR with node's http.request
 
 		.factory.server('$rpc', remote.server)			 		  //Remote procedure call response
 
@@ -90,27 +89,8 @@ module.exports = function(modules, user)
 			return log.red(Error('No user modules were registered! Registration cannot by asyncronous'))
 		}
 
-		var module   = ng.module(requires[length])
-		  , toString = module.toString
-
-		//TODO really should wrap this in a closure and pass these vars in rather than making global
-		module.toString = function()   							  //Insert code into first user module
-		{
-			var str  = ng.version.name+' = angular\n'			  //Allow alternative namespace
-
-				 str += ng.version.name+".version.name = '"+ng.version.name+"'\n"
-
-				 str += ng.version.name+".version.ng   = '"+ng.version.ng+"'"
-
-				 str += ng.module('$rpc')							  //Add $rpc boilerplate
-
-				 str += toString()
-
-			return str
-		}
-
 		log.gray.bold.temp('\nng started')
 
-		injector = ng.bootstrap(null, requires)				  //Start angular and get actual injector
+		intercept = intercept(ng.bootstrap(null, requires)) //Start angular and get actual injector
 	})
 }

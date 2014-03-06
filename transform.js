@@ -172,9 +172,9 @@ function transform(annotate)
 
 		template: function(fn, type, name)
 		{
-			var client = fn.toString()
+			var client =  fn.toString()
 
-			if ('config' != type || ! ~ client.indexOf('$routeProvider'))
+			if ( ! /\$routeProvider\s*.\s*when\(/.test(client))
 			{
 				return fn
 			}
@@ -183,6 +183,8 @@ function transform(annotate)
 
 			self.run.server(function($route)
 			{
+				console.log('Running ng transform templates')
+
 				var server = $route.routes
 
 				for (var i in server)
@@ -191,7 +193,7 @@ function transform(annotate)
 					{
 						i = JSON.stringify(server[i].template.toString())
 
-						fn = client.replace(/template\s*:.+([,}])/, 'template~'+i+'$1')
+						client = client.replace(/template\s*:.+([,}])/, 'template~'+i+'$1')
 					}
 				}
 

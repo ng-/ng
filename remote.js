@@ -23,7 +23,8 @@ exports.client = function($http, $cacheFactory)
       {
          //Angular sorts http parameters into alphabetical order which means our execution order
          //is messed up so we need to JSONIFY the params ourselves and pass it with the URL
-         params[name] += method+'='+angular.toJson([].slice.call(arguments))
+			// encodeURIComponent: angular treats "+" as a space replacing with %20 and # would prematurely cut off the request URI, for args we want to escape a literal +
+         params[name] += method+'='+encodeURIComponent(ng.toJson([].slice.call(arguments)))
 
          var path = '/rpc/'+name+'?'+params[name]
 
@@ -38,18 +39,13 @@ exports.client = function($http, $cacheFactory)
          {
 				if ("application/json" == res.headers["Content-Type"])
 				{
-					res.data = angular.fromJson(res.data)
+					res.data = ng.fromJson(res.data)
 				}
 
             //if out-of-date cache should be updated
-            if ( ! angular.equals(result, res.data))
+            if ( ! ng.equals(result, res.data))
             {
-               if (Object.keys(result).length > 3)
-               {
-                  console.log('Cache was out-of-date')
-               }
-
-               if (angular.isObject(res.data))
+               if (ng.isObject(res.data))
                {
                   for (var i in res.data) result[i] = res.data[i]
                }
@@ -75,7 +71,7 @@ exports.client = function($http, $cacheFactory)
 
       function chain()
       {
-         params[name] += method+'='+angular.toJson([].slice.call(arguments))+'&'
+         params[name] += method+'='+ng.toJson([].slice.call(arguments))+'&'
 
          return this
       }
@@ -103,6 +99,8 @@ exports.server = function($injector, $q)
 			return {config:config}
 		}
 
+		//console.log('RAW URL', config.url)
+
 		var rpc = url.pathname.slice(5)
 		  , out
 
@@ -122,16 +120,12 @@ exports.server = function($injector, $q)
 
 		try
 		{
-			console.log('query', url.query)
 			//Methods can be chained and should be called sequentially
 			//before finally responding to the client
 			for (var i in url.query)
 			{
 				//JSON parse arguments if not already done in the auth config
-				if ('string' == typeof url.query[i])
-				{
-					url.query[i] = JSON.parse(url.query[i])
-				}
+				url.query[i] = JSON.parse(url.query[i])
 
 				out = rpc[i].apply(null, url.query[i])
 			}
