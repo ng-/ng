@@ -43,8 +43,8 @@ module.exports = function($injector)
 
 		function end(http)
 		{
-			try {
-
+			try
+			{
 				if ('string' != typeof http.data)
 				{
 					http.headers = http.headers || {}
@@ -68,7 +68,19 @@ module.exports = function($injector)
 		promise.then(end, end).catch(log.red)
 
 		//Send the req (or config in angular lingo) on its way down the chain
-		q.resolve(req)
+		var data = "?"
+
+		req.on('data', function requestData(chunk)
+		{
+			data += chunk
+		})
+
+		req.on('end', function requestEnd()
+		{
+			req.url += data
+
+			q.resolve(req)
+		})
 	}
 }
 

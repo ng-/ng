@@ -24,16 +24,17 @@ exports.client = function($http, $cacheFactory)
          //Angular sorts http parameters into alphabetical order which means our execution order
          //is messed up so we need to JSONIFY the params ourselves and pass it with the URL
 			// encodeURIComponent: angular treats "+" as a space replacing with %20 and # would prematurely cut off the request URI, for args we want to escape a literal +
-         params[name] += method+'='+encodeURIComponent(ng.toJson([].slice.call(arguments)))
 
-         var path = '/rpc/'+name+'?'+params[name]
+			params[name] += method+'='+encodeURIComponent(ng.toJson([].slice.call(arguments)))
+
+         var path = params[name]
 
          //now saved within path, so clear out params for when this service is run again
          params[name] = ''
 
          //serve cache right away if it exists
          var result  = cached.get(path) || []
-           , promise = $http.get(path).then(cache)
+           , promise = $http.post('/rpc/'+name, path).then(cache)
 
          function cache(res)
          {
