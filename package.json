@@ -10,7 +10,7 @@
     "name": "Adam Kircher"
   },
   "email": "adam.kircher@gmail.com",
-  "version": "0.0.1-experimental8",
+  "version": "0.0.1-experimental1",
   "scripts": {
     "start": "node server.js"
   }
