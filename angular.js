@@ -35,7 +35,7 @@ module.exports = function(modules, callback)
 			//Since loaded asyncronously we need to keep count to know when we are done
 			if (++loaded == Object.keys(modules).length)
 			{
-				process.stdout.clearLine()
+				process.stdout.clearLine && process.stdout.clearLine()
 
 				for (var i in modules)
 				{  //Load the preloaded modules into node using our "fake" window, navigator, & document objects
