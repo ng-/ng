@@ -241,21 +241,24 @@ Transforms are incredibly powerful. This simple transform automatically makes yo
 ```
 
 ## changelog
-#### 0.0.0-rc10
+#### 0.0.0-rc4
 - Changed Rpc from http.get to post to handle large files
 
-#### 0.0.0-rc9
+#### 0.0.0-rc3
 - Fixed encoding issue when rpc argument was base64
 - Force callback arg to be named 'ng' to ensure interoperability
 - Wrapped each module in a closure that renames angular to ng
 - Now ng.module(name).toString is enclosed in <script></script>
 - Combined $xhr and request into $httpBackend
 
-#### 0.0.0-rc8
+#### 0.0.0-rc2
 - renamed parse -> transform
 - renamed stack -> interceptor
 - moved transform & interceptor from the global api to module api
 - simplified the api for the logger
+
+#### 0.0.0-rc1
+- Initial commit
 
 ## todos
 - Many, many ideas. Feel free to email me suggestions!
