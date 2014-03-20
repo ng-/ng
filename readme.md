@@ -25,7 +25,7 @@ require('ng')(modules, function(ng)
 ```
 
 ## It's just angular...
-ng's api mirrors angular's api as closely as possible.  In fact, the [global api](http://docs.angularjs.org/api/ng/function) is exactly the same: ng.toJson, ng.fromJson, ng.isDefined, etc are all available.  The [module api](http://docs.angularjs.org/api/ng/type/angular.Module) is very similar as well
+ng's api mirrors angular's api as closely as possible.  In fact, the [global api](http://docs.angularjs.org/api/ng/function) is exactly the same: `ng.toJson`, `ng.fromJson`, `ng.isDefined`, etc are all available.  The [module api](http://docs.angularjs.org/api/ng/type/angular.Module) is very similar as well
 ```javascript
 ng.module('example', ['ngRoute'])
 
@@ -243,6 +243,7 @@ Transforms are incredibly powerful. This simple transform automatically makes yo
 ## changelog
 #### 0.0.0-rc4
 - Changed Rpc from http.get to post to handle large files
+- Changed Rpc to send body as JSON rather than querystring
 
 #### 0.0.0-rc3
 - Fixed encoding issue when rpc argument was base64
@@ -261,16 +262,17 @@ Transforms are incredibly powerful. This simple transform automatically makes yo
 - Initial commit
 
 ## todos
-- Many, many ideas. Feel free to email me suggestions!
-- Transforms currently affect all modules, but they should only affect the current module and ones that require it
-- Better Error Stacks and with 3 display options server console, client console, browser
-- More stock middleware, gzip etc, and more stock transforms
-- Make $location work on server side functions (send header redirect)
+- Feel free to email adam.kircher@gmail.com with suggestions!
+- Should we enable registration to be async?  If so how do we get user to signal that registration is complete? Possibilities include doing ng()(req, res), ng.listen getter fn, or make ng load upon first request
+- Transforms currently affect all modules, but should only affect the current module and ones that require it
+- Are server's $apply $digest cycles irrelevant? Would it improve performance to override/ignore them?
+- Better/Longer Error Stacks that display in both server & client consoles
+- More stock middleware, gzip, cache, etc, and more stock transforms (spinoff to new module? ng.stack)
+- Enable server.httpBackend to work with streams directly, rather than converting back to them
 - In ng.style's type, 'ng' is not interpolated in view; needs 'angular'
-- Testing API.  Any good ideas of how to integrate?
-- Make namespace use self-executing function rather than setting a global var
-- Rpc should use JSON rather than a query string
-- Rpc should allow http.post to be replaced with other protocols (web socket) or methods (post).
+- Testing API.  Integrate node's require('assert') into angular? (spinoff to new module? ng.test|assert?).  Would client-only service such as controllers & directives need to be put on server for easy testing?
+- Rpc should use "path.to.fn.properties" rather than $rpc[#] in case app want to have rpc api public
+- Rpc should allow http.post to be replaced with other protocols (web socket) or methods (put).
 
 ## related projects
 - [ng.data](https://github.com/ng-/ng.data): simple getter/setter for data persistence
@@ -278,4 +280,4 @@ Transforms are incredibly powerful. This simple transform automatically makes yo
 - ng.cql: realtime cassandra database syncing
 - [ng.auth](https://github.com/ng-/ng.auth): example authentication using ng interceptors
 - [ng.crud](https://github.com/ng-/ng.crud): example demonstrating a simple crud application using ng.seed
-- [ng.style](https://github.com/ng-/ng.style): alert and input helpers for use with twitter bootstrap
+- [ng.style](https://github.com/ng-/ng.style): beautiful html using twitter bootstrap

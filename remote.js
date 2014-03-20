@@ -17,24 +17,23 @@ exports.client = function($http, $cacheFactory)
 
    return function(name, method, type)
    {
-      params[name] = ''
+      params[name] = {}
 
       function trigger()
       {
          //Angular sorts http parameters into alphabetical order which means our execution order
          //is messed up so we need to JSONIFY the params ourselves and pass it with the URL
 			// encodeURIComponent: angular treats "+" as a space replacing with %20 and # would prematurely cut off the request URI, for args we want to escape a literal +
+			params[name][method] = [].slice.call(arguments)
 
-			params[name] += method+'='+encodeURIComponent(ng.toJson([].slice.call(arguments)))
-
-         var path = params[name]
+         var body = JSON.stringify(params[name])
 
          //now saved within path, so clear out params for when this service is run again
-         params[name] = ''
+         params[name] = {}
 
          //serve cache right away if it exists
-         var result  = cached.get(path) || []
-           , promise = $http.post('/rpc/'+name, path).then(cache)
+         var result  = cached.get(name+body) || []
+           , promise = $http.post('/rpc?'+name, body).then(cache)
 
          function cache(res)
          {
@@ -48,7 +47,7 @@ exports.client = function($http, $cacheFactory)
             {
                if (ng.isObject(res.data))
                {
-                  for (var i in res.data) result[i] = res.data[i]
+						ng.extend(result, res.data)
                }
                else
                {  //This combined with $sce allows this to work:
@@ -57,7 +56,7 @@ exports.client = function($http, $cacheFactory)
                   result.toJSON = function() { return res.data }
                }
 
-               cached.put(path, res.data)
+               cached.put(name+body, res.data)
             }
 
             return res.data
@@ -72,7 +71,7 @@ exports.client = function($http, $cacheFactory)
 
       function chain()
       {
-         params[name] += method+'='+ng.toJson([].slice.call(arguments))+'&'
+         params[name][method] = [].slice.call(arguments)
 
          return this
       }
@@ -93,23 +92,18 @@ exports.server = function($injector, $q)
 	return function(config)
 	{
 		//Default value in case middleware has returned undefined
-		var url = require('url').parse(config.url || '/', true)
+		var url = require('url').parse(config.url || '/')
 
-		if ('/rpc/' != url.pathname.slice(0, 5))
+		if ('/rpc' != url.pathname)
 		{
 			return {config:config}
 		}
 
-		//console.log('RAW URL', config.url)
-
-		var rpc = url.pathname.slice(5)
-		  , out
-
 		//If not a factory, there is nothing to do
 		//TODO should support timeout promises like angular
-		if ( ! $injector.has(rpc))
+		if ( ! $injector.has(url.query))
 		{
-			log('Factory doesnt exist', url.rpc)
+			log('Factory doesnt exist', url.query)
 
 			return $q.reject({status:400})
 		}
@@ -117,34 +111,49 @@ exports.server = function($injector, $q)
 		//Rather than walking through nested objects with keys like
 		//"level1.level2.level3. Methods are stored in $rpc property
 		//and can be quickly references by their toJson index
-		rpc = $injector.get(rpc).$rpc
+		var rpc  = $injector.get(url.query).$rpc
+		  , data = ""
+		  , out  = ""
+		  , q    = $q.defer()
 
-		try
+
+		config.on('data', function(chunk)
 		{
-			//Methods can be chained and should be called sequentially
-			//before finally responding to the client
-			for (var i in url.query)
-			{
-				//JSON parse arguments if not already done in the auth config
-				url.query[i] = JSON.parse(url.query[i])
+			data += chunk
+		})
 
-				out = rpc[i].apply(null, url.query[i])
-			}
-
-			return $q.when(out).then(function(obj)
+		config.on('end', function()
+		{
+			try
 			{
-				if ( ! obj.data)
+				data = JSON.parse(data)
+
+				//Methods can be chained and should be called sequentially
+				//before finally responding to the client
+				for (var i in data)
 				{
-					obj = {data:obj}
+					out = rpc[i].apply(null, data[i])
 				}
 
-				return obj
-			})
-		}
-		catch (err)
-		{
-			return $q.reject({status:500, data:err.stack})
-		}
+				var done = function(obj)
+				{
+					if ( ! obj.data)
+					{
+						obj = {data:obj}
+					}
+
+					return obj
+				}
+
+				q.resolve($q.when(out).then(done))
+			}
+			catch (err)
+			{
+				q.reject({status:500, data:err.stack})
+			}
+		})
+
+		return q.promise
 	}
 }
 

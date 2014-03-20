@@ -183,8 +183,6 @@ function transform(annotate)
 
 			self.run.server(function($route)
 			{
-				console.log('Running ng transform templates')
-
 				var server = $route.routes
 
 				for (var i in server)
