@@ -45,7 +45,7 @@ module.exports = function($injector)
 		{
 			try
 			{
-				if ('string' != typeof http.data)
+				if ('object' == typeof http.data && ! Buffer.isBuffer(http.data))
 				{
 					http.headers = http.headers || {}
 
